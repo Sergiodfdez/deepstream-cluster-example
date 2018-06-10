@@ -1,0 +1,55 @@
+---
+- name: Create Swarm Master Machine
+  include_role:
+    name: docker-machine/virtualbox/create_machine
+  vars:
+    group: "master"
+    hostname: "master{{n_masters}}"
+  with_sequence: count={{n_masters}}
+- name: "get docker info"
+  shell: docker info
+  register: docker_info
+  changed_when: false
+- name: "print machine"
+  debug:
+    msg: "print machine event {{ansible_hostname }}"
+#- name: "create primary swarm manager"
+#  shell: docker swarm init --advertise-addr {{ ansible_host}}
+#  register: docker_swarm_init
+#  when: "docker_info.stdout.find('Swarm: inactive') != -1"
+#- name: "Docker Swarm init master"
+#  hosts: master
+#  debug:
+#    msg: "print machine event {{docker_swarm_init}}"
+#- name: "REGISTER ==> swarm manager token"
+#  hosts: master
+#  shell: docker swarm join-token -q manager
+#  register: manager_token
+#- name: "DEBUG ==> Docker swarm manager token"
+#  hosts: master
+#  debug:
+#    msg: "{{manager_token.stdout}}"
+#- name: "REGISTER ==> swarm worker token"
+#  hosts: master
+#  shell: docker swarm join-token -q worker
+#  register: worker_token
+##        - name: "DEBUG ==> Docker swarm worker token"
+##          debug:
+##            msg: "{{worker_token.stdout}}"
+#- name: debug test - hostvars
+#  hosts: master
+#  debug:
+#    msg: "manager_token: {{inventory_hostname}}"
+##        - name: debug test - hostvars
+##          debug: var=hostvars[inventory_hostname]
+#- name: "join as a manager"
+#  hosts: master
+#  shell: "docker swarm join --token {{ hostvars[inventory_hostname]['manager_token']['stdout'] }} {{ hostvars[inventory_hostname]['ansible_eth0']['ipv4']['address'] }}:2377"
+#  when: docker_info.stdout.find("Swarm{{':'}} inactive") != -1
+#  retries: 3
+#  delay: 20
+#  ignore_errors: True
+#- name: "Create Overlay Network"
+#  hosts: master
+#  shell: "docker network create -d overlay skynet"
+#  ignore_errors: True

@@ -1,0 +1,20 @@
+---
+- name: Docker Service Create
+  hosts: master
+  tasks:
+    - block:
+        - name: "Docker Service Create ==> {{service_name}}"
+          shell: "docker service create --name {{service_name}} --network {{network}} --replicas {{replicas}}
+          {% for port in ports %}
+                      -p {{port}}
+          {% endfor %}
+          {% for volume in volumes %}
+                      --mount target={{volume['dest']}},source={{volume['src']}},type=bind
+          {% endfor %}
+           {{image}} {{command}}"
+          register: docker_service_create
+          changed_when: false
+          ignore_errors: True
+        - name: "DEBUG =========> Docker Service Create ==>{{replicas}} new replicas for {{service_name}} service in network {{network}}"
+          debug:
+            msg: "{{docker_service_create}}"

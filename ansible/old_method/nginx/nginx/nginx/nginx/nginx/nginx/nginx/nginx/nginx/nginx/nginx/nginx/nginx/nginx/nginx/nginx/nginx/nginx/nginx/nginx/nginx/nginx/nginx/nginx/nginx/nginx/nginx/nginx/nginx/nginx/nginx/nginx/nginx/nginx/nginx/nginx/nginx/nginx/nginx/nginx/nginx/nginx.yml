@@ -1,0 +1,17 @@
+---
+- name: Nginx prepare environment
+  hosts: all
+  tasks:
+    - block:
+      - name: Creates directory
+        file: path={{dest}} state=directory
+        became: yes
+      - name: example copying file with owner and permissions
+        copy:
+          src: "{{src}}"
+          dest: "{{dest}}"
+          mode: 0644
+        register: copy_output
+      - name: VERIFY ===> COPY FILES from {{src}} to {{dest}}
+        debug:
+          msg: "COPY_OUTPUT: {{copy_output}}"

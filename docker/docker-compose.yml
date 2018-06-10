@@ -1,0 +1,40 @@
+version: '3'
+services:
+  redis:
+    image: "redis:alpine"
+    command: "redis-server --requirepass demoprueba"
+    network_mode: "host"
+    ports:
+      - 6379:6379
+    volumes:
+      - ./docker/redis/data:/data
+
+  ds1:
+      image: deepstreamio/deepstream.io:latest
+      depends_on:
+        - redis
+      ports:
+          - 6020:6020
+          - 6021:6021
+      network_mode: "host"
+      volumes:
+          - ./docker/deepstream:/etc/deepstream
+      command: ["/usr/bin/deepstream",  "start", "--lib-dir", "/var/lib/deepstream"]
+
+  ds2:
+      image: deepstreamio/deepstream.io:latest
+      depends_on:
+        - redis
+      ports:
+          - 6022:6020
+          - 6023:6021
+      network_mode: "host"
+      volumes:
+          - ./docker/deepstream:/etc/deepstream
+      command: ["/usr/bin/deepstream",  "start", "--lib-dir", "/var/lib/deepstream"]
+  nginx:
+      image: nginx:latest
+      volumes:
+        - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+
+

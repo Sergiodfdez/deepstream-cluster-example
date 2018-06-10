@@ -1,0 +1,21 @@
+---
+- name: Create Docker Machine {{hostname}} on Virtualbox
+  shell: docker-machine create --driver virtualbox {{hostname}}
+  register: create_result
+  ignore_errors: True
+- name: Get Docker Machine {{hostname}}
+  shell: docker-machine inspect {{hostname}}
+  register: inspect_result
+- name: debug stdout
+  set_fact:
+    machine_data: "{{ (inspect_result.stdout | from_json).Driver }}"
+- name: fail the play if the previous command did not succeed
+  fail:
+    msg: "the command failed: {{create_result.stderr}}"
+  when: "create_result is failed and not 'Docker machine \"'+hostname+'\" already exists' in create_result.stderr"
+- add_host:
+    hostname: "{{hostname}}"
+    groups: "{{group}}"
+    ansible_host: "{{machine_data.IPAddress}}"
+    ansible_user: "{{machine_data.SSHUser}}"
+    ansible_ssh_private_key_file: "{{machine_data.SSHKeyPath}}"

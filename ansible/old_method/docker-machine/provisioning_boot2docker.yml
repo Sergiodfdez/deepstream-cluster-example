@@ -1,0 +1,13 @@
+---
+- name: Provisioning Boot2Docker
+  hosts: "{{group}}"
+  gather_facts: no
+  tasks:
+    - name: 'install python2 in Boot2Docker'
+      raw: tce-load -w -i python.tcz
+      register: python2_install
+      ignore_errors: True
+    - name: 'Replace python2 alias for python'
+      raw: sudo ln -s /usr/local/bin/python2 /usr/bin/python
+      when: "python2_install is changed"
+      ignore_errors: True

@@ -1,0 +1,26 @@
+---
+- block:
+  - name: Create Docker Machine {{machine_name}}
+    shell: docker-machine create --driver virtualbox {{machine_name}}
+    register: create_result
+    ignore_errors: True
+  - name: Get Docker Machine {{machine_name}}
+    shell: docker-machine inspect {{machine_name}}
+    register: inspect_result
+  - name: debug stdout
+    set_fact:
+      machine_data: "{{ (inspect_result.stdout | from_json).Driver }}"
+  - name: fail the play if the previous command did not succeed
+    fail:
+      msg: "the command failed: {{create_result.stderr}}"
+    when: "create_result is failed and not 'Docker machine \"'+machine_name+'\" already exists' in create_result.stderr"
+  - add_host:
+      hostname: "{{machine_name}}"
+      groups: "{{group}}"
+      ansible_host: "{{machine_data.IPAddress}}"
+      ansible_user: "{{machine_data.SSHUser}}"
+      ansible_ssh_private_key_file: "{{machine_data.SSHKeyPath}}"
+  vars:
+    machine_name: "{{group+count}}"
+
+#  docker-machine ip `docker-machine ls --format "{{.Name}}"`

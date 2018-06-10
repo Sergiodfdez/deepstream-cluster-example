@@ -1,0 +1,4 @@
+---
+- name: "HOLA"
+  debug:
+    msg: "Estamos imprimiendo hola"

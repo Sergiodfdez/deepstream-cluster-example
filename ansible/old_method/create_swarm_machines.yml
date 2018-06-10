@@ -1,0 +1,17 @@
+---
+- name: Create Swarm Machines
+  hosts: all
+  tasks:
+    - block:
+      - name: Create Docker Manager Machines
+        include_tasks: docker-machine/create_one.yml
+        vars:
+          group: "master"
+          count: "{{item}}"
+        with_sequence: count={{n_masters}}
+      - name: Create Docker Worker Machines
+        include_tasks: docker-machine/create_one.yml
+        vars:
+          group: "worker"
+          count: "{{item}}"
+        with_sequence: count={{n_workers}}

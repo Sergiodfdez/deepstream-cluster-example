@@ -1,0 +1,8 @@
+---
+- hosts: all
+  roles:
+  - {
+      role: docker-machine/virtualbox/create_machine,
+      group: "master",
+      n_masters: 1,
+    }

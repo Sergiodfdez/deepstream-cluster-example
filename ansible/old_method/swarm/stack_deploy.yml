@@ -1,0 +1,20 @@
+---
+- name: Swarm Deply Stack prepare environment
+  hosts: master
+  tasks:
+    - block:
+      - name: Creates swarm directory
+        file: path=/tmp/swarm state=directory
+        became: yes
+      - name: example copying file with owner and permissions
+        copy:
+          src: "{{src}}"
+          dest: "~/swarm/"
+          mode: 0644
+        register: copy_output
+      - name: VERIFY ===> COPY Swarm Stack FILES
+        debug:
+          msg: "COPY_OUTPUT: {{copy_output}}"
+      - name: DEPLOY STACK {{name}}
+        shell: "docker stack deploy -c swarm/docker-compose.yml {{name}}"
+        regist: deploy_stack

@@ -1,0 +1,22 @@
+version: '3.3'
+
+services:
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "8080:8080"
+      - "3000:3000"
+    volumes:
+      - "./nginx:/etc/nginx"
+    networks:
+      - skynet
+    deploy:
+      replicas: 3
+  http:
+    image: katacoda/docker-http-server
+    ports:
+      - "80:80"
+    networks:
+      - skynet
+networks:
+  skynet:

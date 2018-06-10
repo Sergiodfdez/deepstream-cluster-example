@@ -1,0 +1,43 @@
+---
+- name: Init SWARM Environment
+  hosts: local
+- import_playbook: create_swarm_machines.yml
+  vars:
+    n_masters: 1
+    n_workers: 2
+- import_playbook: docker-machine/provisioning_boot2docker.yml
+  vars:
+    group: ["master", "worker"]
+- import_playbook: init_swarm_master.yml
+- import_playbook: init_swarm_worker.yml
+- import_playbook: nginx/nginx.yml
+  vars:
+    src: ./
+    dest: nginx
+- import_playbook: swarm/stack_deploy.yml
+  vars:
+    src: docker-compose.yml
+    name: theneomarket
+#- import_playbook: services/create.yml
+#  vars:
+#    service_name: nginx
+#    network: skynet
+#    replicas: 1
+#    ports: ['8080:80','3000:3000']
+#    volumes: [{'src': '/home/docker/nginx', 'dest':'/etc/nginx/'}]
+#    image: nginx:alpine
+#    command: ""
+#- import_playbook: services/scale.yml
+#  vars:
+#    service_name: nginx
+#    replicas: 3
+#- import_playbook: init_swarm_worker.yml
+#- import_playbook: services/create.yml
+#  vars:
+#    service_name: http
+#    network: skynet
+#    replicas: 3
+#    ports: ['80:80']
+#    volumes: []
+#    image: katacoda/docker-http-server
+#    command: ""

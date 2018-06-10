@@ -1,0 +1,12 @@
+---
+- name: Docker Service Scale
+  hosts: master
+  tasks:
+    - block:
+        - name: "Docker Service Scale ==> {{service_name}}"
+          shell: docker service scale {{service_name}}={{replicas}}
+          register: docker_service_scale
+          changed_when: false
+        - name: "DEBUG =========> Service Scale"
+          debug:
+            msg: "{{docker_service_scale}}"

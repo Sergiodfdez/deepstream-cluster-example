@@ -1,0 +1,10 @@
+---
+- block:
+  - name: Remove Docker Machine {{name}}
+    shell: docker-machine rm --driver virtualbox {{name}}
+    register: command_result
+    ignore_errors: True
+  - name: fail the play if the previous command did not succeed
+    fail:
+      msg: "the command failed: {{command_result.stderr}}"
+    when: "command_result is failed and not 'Docker machine \"'+name+'\" already exists' in command_result.stderr"

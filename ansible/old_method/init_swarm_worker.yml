@@ -1,0 +1,30 @@
+---
+- name: Init Swarm Worker
+  hosts: worker
+  tasks:
+    - block:
+        - name: "Get docker info"
+          shell: docker info
+          register: docker_info
+          changed_when: false
+#        - name: "print worker machine"
+#          debug:
+#            msg: "print worker event {{ansible_nodename }}"
+#        - name: "hostvars[inventory_hostname].manager_token"
+#          debug:
+#            msg: "worker: {{hostvars['master1'].worker_token.stdout}}"
+
+        - name: "Join as a worker"
+          shell: "docker swarm join --token {{ hostvars['master1']['worker_token']['stdout'] }} {{hostvars['master1']['ansible_all_ipv4_addresses'][0]}}:2377"
+          when: "docker_info.stdout.find('Swarm: inactive') != -1"
+          retries: 3
+          delay: 20
+#        - name: "get docker swarm worker token"
+#          shell: docker swarm join-token -q {{ansible_nodename}}
+#          register: worker_token
+#        - name: "create primary swarm manager"
+#        shell: docker swarm init --advertise-addr {{ ansible_eth0['ipv4']['address'] }}
+#        when: "docker_info.stdout.find('Swarm: inactive') != -1"
+        - name: "PRINT ==> Workers Ip's"
+          debug:
+            msg: "{{hostvars['master1']['ansible_all_ipv4_addresses'][0] }}"

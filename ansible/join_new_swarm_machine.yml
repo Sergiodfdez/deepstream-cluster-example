@@ -1,0 +1,7 @@
+---
+- name: Join New Swarm Machine
+  hosts: local
+  tasks:
+  - name: "DEBUG JOIN NEW SWARM MACHINE"
+    debug:
+      msg: "Hola Funciona"
