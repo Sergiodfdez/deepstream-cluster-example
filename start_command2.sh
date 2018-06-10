@@ -1,2 +1,2 @@
 #! /bin/bash
-ANSIBLE_CONFIG=./config/ansible.cfg ansible-playbook init_swarm_environment.yml
+ANSIBLE_CONFIG=./ansible/config/ansible.cfg ansible-playbook ansible/join_new_swarm_machine.yml
